@@ -10,7 +10,7 @@ const utilityItems = [
 
 export default function Masthead() {
   return (
-    <header className="border-b border-[#ddd8cf] bg-[#f7f6f2]">
+    <header className="border-b border-[#ddd8cf] bg-[#ffffff]">
       <div className="mx-auto max-w-7xl px-4 pb-5 pt-10 sm:px-5 lg:px-6">
         <p className="text-center text-[11px] uppercase tracking-[0.28em] text-[#6d6a63]">
           Monday, 16 March 2026
