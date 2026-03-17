@@ -1,0 +1,6 @@
+<svg width="760" height="180" viewBox="0 0 760 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="1" y="1" width="758" height="178" rx="3" stroke="#1B1B1B" stroke-width="2"/>
+  <line x1="30" y1="45" x2="730" y2="45" stroke="#CFCAC0"/>
+  <line x1="30" y1="135" x2="730" y2="135" stroke="#CFCAC0"/>
+  <text x="380" y="114" text-anchor="middle" fill="#121212" font-size="86" letter-spacing="12" font-family="'Times New Roman', Times, serif">WARDEN</text>
+</svg>
