@@ -206,6 +206,9 @@ p{margin:0}
 .hstat .v{font-family:var(--mono);font-size:15.5px;font-weight:500;display:block;margin-top:3px;
   font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hstat .s{font-size:10.5px;opacity:.78;display:block;line-height:1.3}
+.hstat.money{cursor:pointer;border:0;background:rgba(255,255,255,.17);text-align:left;width:100%;
+  font:inherit;transition:transform .12s ease}
+.hstat.money:active{transform:scale(.96)}
 
 /* bento */
 .bento{display:grid;grid-template-columns:1fr 1fr;gap:11px}
@@ -295,6 +298,8 @@ p{margin:0}
 .tlspine{width:2px;background:var(--line2);height:100%;margin:0 auto}
 
 /* chips */
+.chip.money{cursor:pointer;border:0;font:inherit;transition:transform .12s ease}
+.chip.money:active{transform:scale(.93)}
 .chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:4px 10px;
   border-radius:999px;background:var(--surf3);color:var(--ink2);white-space:nowrap}
 .chip .mi{font-size:14px}
@@ -1714,6 +1719,33 @@ function fixTimes(html){
     });
   });
 }
+/* ---------- currency toggle ----------
+   Every price on the trip is authored in Thai baht, including narrative
+   strings ("Free (\u0e3f50-100 for offerings)", "\u0e3f450-600", "\u0e3f60 flagfall; \u0e3f150-250 ...").
+   Rather than add a parallel USD field to every data record, convert in
+   place: this walks rendered HTML exactly like fixTimes (skipping tag
+   interiors, so hrefs/attrs are untouched) and rewrites every \u0e3fN or \u0e3fN-N
+   token to its dollar equivalent whenever the viewer has switched to USD.
+   Tier symbols with no digit after them (\u0e3f\u0e3f\u0e3f) never match, so they are
+   left alone in either mode. */
+var CURR = 'THB';
+function toggleCurrency(){
+  CURR = (CURR==='THB') ? 'USD' : 'THB';
+  LS.set('currency', CURR);
+  render();
+  toast(CURR==='USD' ? 'Showing prices in USD' : 'Showing prices in THB');
+}
+function fixCurrency(html){
+  if(CURR!=='USD') return html;
+  return html.replace(/(<[^>]*>)|([^<]+)/g, function(all,tag,text){
+    if(tag) return tag;
+    return text.replace(/\u0e3f\s*([\d,]+(?:\.\d+)?)(?:\s*[\u2013-]\s*([\d,]+(?:\.\d+)?))?/g, function(m,n1,n2){
+      var a=parseFloat(n1.replace(/,/g,''));
+      if(n2){ var b=parseFloat(n2.replace(/,/g,'')); return usd(a)+'\u2013'+usd(b).slice(1); }
+      return usd(a);
+    });
+  });
+}
 function hm(mins){ mins=((mins%1440)+1440)%1440; var h=Math.floor(mins/60),m=mins%60;
   return (h<10?'0':'')+h+':'+(m<10?'0':'')+m; }
 function toMin(hhmm){ var p=String(hhmm).split(':'); return (+p[0])*60+(+p[1]); }
@@ -2002,6 +2034,7 @@ function fallbackCopy(t,cb){
   }catch(e){ toast('Select and copy manually'); }
 }
 function thb(n){ return '฿'+Number(n).toLocaleString('en-US'); }
+function thbRef(n){ return '&#3647;'+Number(n).toLocaleString('en-US'); }
 function usd(n){ return '$'+(n/TRIP.fx.rate).toFixed(n/TRIP.fx.rate<10?2:0); }
 function kv(k,v){ return '<dt>'+k+'</dt><dd>'+v+'</dd>'; }
 function monName(iso){ return ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+iso.slice(5,7)]; }
@@ -2049,7 +2082,7 @@ function vHome(){
       hstat('Feels',(cur.feels!=null?cur.feels+'°':'—'),(cur.hum!=null?cur.hum+'% hum':'—'))+
       hstat('Rain',(nh&&nh.pop!=null?nh.pop+'%':'—'),'next hour')+
       hstat('Sunset',ss,'plan rooftops')+
-      hstat('฿1,000',usd(1000),'@'+TRIP.fx.rate)+
+      hstatMoney(1000)+
       hstat('Depart',(t.after?'Done':(dur(t.toDepart)||'—')),'1 Oct '+departPlan().flight)+
     '</div></div>';
 
@@ -2134,6 +2167,16 @@ function homeTodos(){
 }
 function chkHome(id,v){ var c=LS.get('checks',{}); c[id]=v; LS.set('checks',c); render(); }
 function hstat(k,v,s){ return '<div class="hstat"><span class="k">'+k+'</span><span class="v">'+v+'</span><span class="s">'+s+'</span></div>'; }
+/* A quick-conversion stat that IS the toggle: headline is whichever currency
+   is currently active, subtitle is the other one, so tapping either shows
+   you both numbers before and after. */
+function hstatMoney(thbAmount){
+  var head = CURR==='USD' ? usd(thbAmount) : thb(thbAmount);
+  var sub  = CURR==='USD' ? thbRef(thbAmount) : usd(thbAmount);
+  return '<button class="hstat money" onclick="toggleCurrency()" '+
+    'title="Tap to show in '+(CURR==='THB'?'USD':'THB')+'" aria-label="Tap to show in '+(CURR==='THB'?'USD':'THB')+'">'+
+    '<span class="k">Quick check</span><span class="v">'+head+'</span><span class="s">≈ '+sub+'</span></button>';
+}
 function btile(c,icon,title,subtitle,tab){
   return '<button class="btile t-'+c+'" onclick="go(\''+tab+'\')">'+
     '<span class="bi">'+mi(icon,'fill')+'</span>'+
@@ -2231,7 +2274,9 @@ function renderDay(iso){
           mi(k[1],'sm')+' '+k[0].charAt(0)+k[0].slice(1).toLowerCase()+'</button>'; }).join('')+
       '</div><div class="card"><div class="row" style="margin-bottom:6px">'+
       '<span class="chip coral">'+chosen.charAt(0)+chosen.slice(1).toLowerCase()+'</span>'+
-      '<span class="chip">'+day.modes[chosen].cost+'</span></div>'+
+      '<span class="chip money" onclick="event.stopPropagation();toggleCurrency()" '+
+      'title="Tap to show in '+(CURR==='THB'?'USD':'THB')+'" aria-label="Tap to show in '+(CURR==='THB'?'USD':'THB')+'">'+
+      day.modes[chosen].cost+'</span></div>'+
       '<h3 style="margin-bottom:7px">'+day.modes[chosen].h+'</h3>'+
       '<p class="tiny">'+day.modes[chosen].body+'</p></div></section>';
   }
@@ -2412,7 +2457,9 @@ function vDiscover(){
         '<h3>'+p.name+'</h3>'+
         '<div class="row" style="gap:6px;margin-top:6px"><span class="chip '+m.c+'">'+mi('place','xs')+ZONES[p.zone].short+'</span>'+
         '<span class="chip">'+mi('directions_walk','xs')+'~'+r.tr.min+'–'+r.tr.max+' min</span>'+
-        '<span class="chip">'+mi('payments','xs')+p.cost+'</span></div></div></div>'+
+        '<span class="chip money" onclick="event.stopPropagation();toggleCurrency()" '+
+        'title="Tap to show in '+(CURR==='THB'?'USD':'THB')+'" aria-label="Tap to show in '+(CURR==='THB'?'USD':'THB')+'">'+
+        mi('payments','xs')+p.cost+'</span></div></div></div>'+
         '<div class="tlbody"><p class="tiny" style="color:var(--ink)">'+p.why+'</p>'+
         '<dl class="kv">'+
         kv('Why now','Fits your window with <b>'+Math.max(0,DEC.time-r.need)+' min to spare</b>.')+
@@ -2461,7 +2508,9 @@ function vDiscover(){
       '<span class="sumtxt">'+p.name+'</span></summary><div class="dbody">'+
       '<div class="row" style="margin-bottom:10px;gap:6px"><span class="chip '+m.c+'">'+ZONES[p.zone].short+'</span>'+
       '<span class="chip">'+mi('schedule','xs')+p.open+'–'+p.close+'</span>'+
-      '<span class="chip">'+mi('payments','xs')+p.cost+'</span>'+badge(p.badge)+'</div>'+
+      '<span class="chip money" onclick="event.preventDefault();event.stopPropagation();toggleCurrency()" '+
+      'title="Tap to show in '+(CURR==='THB'?'USD':'THB')+'" aria-label="Tap to show in '+(CURR==='THB'?'USD':'THB')+'">'+
+      mi('payments','xs')+p.cost+'</span>'+badge(p.badge)+'</div>'+
       '<p class="tiny" style="color:var(--ink)">'+p.why+'</p>'+
       '<dl class="kv">'+kv('Getting there',p.how)+kv('Duration','~'+p.dur+' min')+kv('Risk',p.risk)+
       kv('Backup',p.backup)+kv('Then',p.next)+'</dl>'+
@@ -2513,7 +2562,9 @@ function foodCards(){
       '<div class="media g-amber">'+mi('restaurant','lg fill')+'</div>'+
       '<div class="th"><div class="row" style="gap:6px;margin-bottom:4px">'+
       '<span class="chip amber">'+mi('place','xs')+ZONES[r.zone].short+'</span>'+
-      '<span class="chip">'+r.price+' · '+r.usd+'</span>'+badge(r.badge)+'</div>'+
+      '<span class="chip money" onclick="event.stopPropagation();toggleCurrency()" '+
+      'title="Tap to show in '+(CURR==='THB'?'USD':'THB')+'" aria-label="Tap to show in '+(CURR==='THB'?'USD':'THB')+'">'+
+      r.price+' · '+r.usd+'</span>'+badge(r.badge)+'</div>'+
       '<h3>'+r.name+'</h3><p class="tiny" style="margin-top:2px">'+r.cuisine+' · '+r.walk+'</p></div></div>'+
       '<div class="tlbody"><dl class="kv" style="margin-top:0">'+
       kv('Hours','<b>'+r.hours+'</b>')+kv('Booking',r.resv)+kv('Solo',r.solo)+
@@ -2883,14 +2934,16 @@ function vPrep(){
     [[100,'A coffee, water and a snack'],[500,'Grand Palace entry, or a decent rooftop cocktail'],
      [1000,'A good Thai dinner for one with a drink'],[2000,'A full evening: dinner, drinks and two Grabs'],
      [5000,'A big night, or two days of everything']].map(function(r){
-      return '<tr><td class="num"><b>'+thb(r[0])+'</b></td><td class="num">'+usd(r[0])+'</td><td class="tiny">'+r[1]+'</td></tr>'; }).join('')+
+      return '<tr><td class="num"><b>'+thbRef(r[0])+'</b></td><td class="num">'+usd(r[0])+'</td><td class="tiny">'+r[1]+'</td></tr>'; }).join('')+
     '</tbody></table></div><p class="src" style="margin-top:9px">'+TRIP.fx.src+', '+TRIP.fx.asOf+'. Rates move daily — an anchor, not a quote.</p></div>'+
     '<div class="stack-s" style="margin-top:12px">'+
     '<details open><summary><span class="media sm g-teal">'+mi('wallet','sm fill')+'</span><span class="sumtxt">How much cash tonight?</span></summary>'+
     '<div class="dbody"><div class="stack-s">'+MONEY.tonight.map(function(m){
       return '<div class="listrow" style="cursor:default"><span class="lr"><span class="lt">'+m.sit+'</span>'+
         '<span class="ls" style="margin-top:3px">'+m.why+'</span></span>'+
-        '<span class="mono" style="font-weight:500;font-size:15px;color:var(--coral)">'+m.amt+'</span></div>'; }).join('')+'</div></div></details>'+
+        '<span class="chip money mono" style="font-weight:500;font-size:15px;color:var(--coral);background:none" '+
+        'onclick="event.stopPropagation();toggleCurrency()" title="Tap to show in '+(CURR==='THB'?'USD':'THB')+'" '+
+        'aria-label="Tap to show in '+(CURR==='THB'?'USD':'THB')+'">'+m.amt+'</span></div>'; }).join('')+'</div></div></details>'+
     ['atm|ATMs|local_atm','exch|Exchanging cash|currency_exchange','cards|Cards|credit_card'].map(function(k){
       var p=k.split('|');
       return '<details><summary><span class="media sm g-amber">'+mi(p[2],'sm fill')+'</span><span class="sumtxt">'+p[1]+'</span></summary>'+
@@ -2976,7 +3029,7 @@ function openSOS(){
   h += callout('note','wifi_off','<b>This screen works with no signal and no data.</b> Everything on it is stored in the page. '+
     'Screenshot it before you fly, and consider printing it — the one failure mode it cannot survive is not having your phone.');
 
-  var v=$('#sosview'); v.innerHTML=fixTimes(h); v.hidden=false; document.body.style.overflow='hidden';
+  var v=$('#sosview'); v.innerHTML=fixCurrency(fixTimes(h)); v.hidden=false; document.body.style.overflow='hidden';
 }
 var MENU=[
  {g:'Navigate', items:[
@@ -3025,7 +3078,7 @@ function openMenu(){
     '</p><p class="src" style="margin-top:8px">Checklists and journal entries are stored in this browser only. '+
     'Everything except live weather works with no signal.</p></div>';
 
-  var v=$('#menuview'); v.innerHTML=fixTimes(h); v.hidden=false; document.body.style.overflow='hidden';
+  var v=$('#menuview'); v.innerHTML=fixCurrency(fixTimes(h)); v.hidden=false; document.body.style.overflow='hidden';
 }
 function closeMenu(){ var v=$('#menuview'); if(!v) return; v.hidden=true; v.innerHTML='';
   document.body.style.overflow=''; }
@@ -3105,7 +3158,7 @@ function render(){
         '<p class="tiny" style="margin-top:8px">Every other screen still works, and the Emergency button is unaffected.</p>'+
         '</div></div>';
   }
-  v.innerHTML=fixTimes(h);
+  v.innerHTML=fixCurrency(fixTimes(h));
   /* Sub-lists render into placeholders after the view is in the DOM. */
   if(CUR==='around' && SUBSEL.around==='food'){ renderFoodList(); renderDishList(''); }
   if(CUR==='ready' && SUBSEL.ready==='prep'){ renderPhrases(''); }
@@ -3161,6 +3214,8 @@ function boot(){
     W.sunrise=cached.sunrise; W.sunset=cached.sunset;
     W.state='cache'; W.at=cached.at; W.src='cached';
   }
+  CURR = LS.get('currency','THB');
+  if(CURR!=='USD') CURR='THB';
   SUBSEL.around = LS.get('sub_around','food');
   if(['food','move'].indexOf(SUBSEL.around)===-1) SUBSEL.around='food';
   SUBSEL.ready = LS.get('sub_ready','safety');
