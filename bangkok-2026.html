@@ -174,7 +174,7 @@ p{margin:0}
 .hero .heye{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;opacity:.82}
 .hero h1{color:#fff;margin-top:5px;font-size:27px}
 .hero .hsub{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:13.5px;opacity:.92;font-weight:500}
-.hclock{font-family:var(--mono);font-size:34px;font-weight:500;letter-spacing:-.03em;line-height:1;
+.hclock{font-family:var(--mono);font-size:25px;font-weight:500;letter-spacing:-.03em;line-height:1;
   font-variant-numeric:tabular-nums}
 .hclock-s{font-family:var(--mono);font-size:11px;opacity:.8;margin-top:5px;display:block;text-align:right}
 
@@ -183,7 +183,7 @@ p{margin:0}
 .hstat{background:rgba(255,255,255,.17);border:1px solid rgba(255,255,255,.2);border-radius:var(--r-m);
   padding:10px 11px;backdrop-filter:blur(6px);min-width:0}
 .hstat .k{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;opacity:.82;display:block}
-.hstat .v{font-family:var(--mono);font-size:18px;font-weight:500;display:block;margin-top:3px;
+.hstat .v{font-family:var(--mono);font-size:15.5px;font-weight:500;display:block;margin-top:3px;
   font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hstat .s{font-size:10.5px;opacity:.78;display:block;line-height:1.3}
 
@@ -302,7 +302,7 @@ p{margin:0}
 
 /* sequence */
 .seq{display:flex;flex-direction:column}
-.seqrow{display:grid;grid-template-columns:54px 1fr;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.seqrow{display:grid;grid-template-columns:74px 1fr;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
 .seqrow:last-child{border-bottom:0}
 .seqrow .st{font-family:var(--mono);font-size:12.5px;font-weight:500;color:var(--teal);font-variant-numeric:tabular-nums}
 .seqrow .sb{font-size:13.5px;min-width:0;color:var(--ink2)}
@@ -467,8 +467,8 @@ var TRIP = {
     brand: 'Marriott Bonvoy',
     en: '518/8 Ploenchit Road, Lumphini, Pathum Wan, Bangkok 10330',
     th: 'โรงแรมเรเนซองส์ กรุงเทพฯ ราชประสงค์\n518/8 ถนนเพลินจิต แขวงลุมพินี เขตปทุมวัน กรุงเทพมหานคร 10330',
-    phone: '+6621259000',
-    phoneDisp: '+66 2 125 9000',
+    phone: '+6621255000',
+    phoneDisp: '+66 2 125 5000',
     bts: 'BTS Chit Lom (Sukhumvit Line) — Exit 4, ~3–5 min walk',
     maps: 'https://www.google.com/maps/search/?api=1&query=Renaissance+Bangkok+Ratchaprasong+Hotel'
   },
@@ -486,14 +486,14 @@ var TRIP = {
 
 /* ---------- Bangkok September/October climatology (fallback tier 3) ----------
    Source: climate-data.org, weather-atlas.com, nomadseason.com (accessed 2026-09-21).
-   Sept: ~245mm over ~24 rain days, humidity 79–87%, mean high 32°C, low 25°C.
-   Oct:  ~292mm over ~17 rain days, humidity ~78%, mean high 32.6°C.
+   Sept: ~9.6in over ~24 rain days, humidity 79–87%, mean high 90°F, low 77°F.
+   Oct:  ~11.5in over ~17 rain days, humidity ~78%, mean high 91°F.
    Rain is convective and concentrates mid-afternoon to early evening. */
 var CLIMO = {
   note:'Typical late-September Bangkok pattern — NOT a forecast.',
   tempByHour:[26,26,26,25,25,25,26,27,29,31,32,33,34,34,33,32,31,30,29,28,28,27,27,26],
   rainByHour:[15,12,10,10,10,10,10,12,15,18,22,28,38,48,58,62,60,55,48,40,32,26,22,18],
-  humidity:82, uvMax:10, windAvg:10
+  humidity:82, uvMax:10, windAvg:6 /* mph */
 };
 
 /* ---------- WMO weather codes ---------- */
@@ -573,7 +573,7 @@ var PLACES = [
  why:'344 steps up an artificial hill to a 360° view over the Old City — the only major temple that plausibly stays open into the evening, and the best sunset temple in Bangkok.',
  how:'Grab to Wat Saket, Boriphat Road. Spiral ramp, not a scramble.',
  next:'Down to the Old City for dinner, or Grab onward to Chinatown.',
- risk:'CLOSING TIME DISPUTED (17:00 vs 19:00 vs 20:00). Call ahead or arrive by 16:30. The climb in 33°C humidity is genuinely sweaty.',
+ risk:'CLOSING TIME DISPUTED (17:00 vs 19:00 vs 20:00). Call ahead or arrive by 16:30. The climb in 91°F humidity is genuinely sweaty.',
  backup:'If shut, the illuminated chedi still photographs well from the street.',
  badge:'VERIFY',src:'Sources conflict: 17:00 / 19:00 / 20:00',srcDate:'2026'},
 
@@ -1155,7 +1155,7 @@ var TRANSPORT = [
 {id:'walk',name:'Walking',tag:'Limited by the heat',
  use:'Use the elevated skywalk network around Ratchaprasong, Chit Lom and Siam — it is covered, air-conditioned in parts, and avoids the pavements entirely.',
  pay:'Free.',
- expect:'At 32°C and 80% humidity, twenty minutes outdoors is a shower’s worth of sweat. Pavements are uneven and often obstructed.',
+ expect:'At 90°F and 80% humidity, twenty minutes outdoors is a shower’s worth of sweat. Pavements are uneven and often obstructed.',
  mistakes:'Underestimating a "short" walk at 15:00. Walking the Old City between temples at midday without water.',
  when:'Ratchaprasong to Siam, inside the skywalk. Grand Palace to Wat Pho, early morning.',
  notwhen:'Anything over 15 minutes between 11:00 and 16:00.',cost:'Free.'}
@@ -1287,7 +1287,7 @@ var HEALTH = {
  {t:'Water',d:'<b>Do not drink the tap water.</b> Bottled water is everywhere and costs ฿10–20. Your hotel provides it free daily. Brushing your teeth with tap water is generally fine and almost everyone does it.'},
  {t:'Ice',d:'Ice in established restaurants, hotels and chains is made commercially from filtered water and is fine — it is the uniform cylinders with a hole through the middle. Be more cautious with irregular crushed ice at informal stalls.'},
  {t:'Food',d:'Your itinerary deliberately avoids street food. Beyond that: eat hot food hot, avoid raw or lightly-cured seafood, avoid fermented fish and crab dishes (pla ra, som tam pu), and avoid anything that has been sitting at room temperature. CDC notes that the main street-food risk is the absence of running water for hand-washing, not the cooking itself.'},
- {t:'Heat and humidity',d:'32–34°C at 80% humidity. You will sweat more than you expect and lose salts. Drink before you are thirsty. Two litres a day minimum, more on 1 October.'},
+ {t:'Heat and humidity',d:'90–93°F at 80% humidity. You will sweat more than you expect and lose salts. Drink before you are thirsty. Two litres a day minimum, more on 1 October.'},
  {t:'Dehydration warning signs',d:'Headache, dark urine, dizziness on standing, stopping sweating. If you stop sweating in that heat, get indoors and get cold immediately — that is heat exhaustion tipping toward something serious.'},
  {t:'Sun',d:'You are 13° north of the equator. UV index routinely hits 10–11. SPF 50 in the morning, reapplied at lunch, even under cloud. The Grand Palace courtyard has no shade at all.'},
  {t:'Mosquitoes',d:'Dengue is present in Bangkok and is spread by a <b>daytime</b>-biting mosquito, so repellent is a morning thing, not just an evening thing. DEET or picaridin. There is no malaria risk in Bangkok itself.'},
@@ -1340,7 +1340,7 @@ var MONEY = {
 var ADDRESSES = [
 {id:'hotel',name:'My Hotel — Renaissance Ratchaprasong',
  th:'โรงแรมเรเนซองส์ กรุงเทพฯ ราชประสงค์\n518/8 ถนนเพลินจิต แขวงลุมพินี เขตปทุมวัน กรุงเทพมหานคร 10330',
- en:'518/8 Ploenchit Road, Lumphini, Pathum Wan, Bangkok 10330',phone:'+6621259000',
+ en:'518/8 Ploenchit Road, Lumphini, Pathum Wan, Bangkok 10330',phone:'+6621255000',
  q:'Renaissance Bangkok Ratchaprasong Hotel',key:true},
 {id:'bkk',name:'Suvarnabhumi Airport (BKK)',
  th:'ท่าอากาศยานสุวรรณภูมิ\n999 หมู่ 1 ถนนบางนา-ตราด ตำบลราชาเทวะ อำเภอบางพลี สมุทรปราการ 10540',
@@ -1392,7 +1392,7 @@ var PREP = [
  {id:'p11',n:'Book Octave via SevenRooms for Wed 30 Sep ~17:30',d:'Optional — the bar takes walk-ins — but a table at happy hour into sunset is worth the two minutes.'},
  {id:'p12',n:'Call or have the hotel call Wat Saket to confirm closing time',d:'<b>The single highest-value phone call of this trip.</b> Sources disagree: 17:00 vs 19:00 vs 20:00. Tuesday evening depends on it.'},
  {id:'p13',n:'Buy: SPF50, DEET repellent, rehydration salts, loperamide, paracetamol',d:'Cheaper and more certain at home than hunting for them jet-lagged.'},
- {id:'p14',n:'Pack temple clothes deliberately',d:'Long lightweight trousers and a sleeved shirt you can wear in 33°C. The Grand Palace turns people away every single day.'},
+ {id:'p14',n:'Pack temple clothes deliberately',d:'Long lightweight trousers and a sleeved shirt you can wear in 91°F. The Grand Palace turns people away every single day.'},
  {id:'p15',n:'Email yourself passport, insurance and flight scans',d:'Plus a photo on your phone. Not a cloud folder you need a password manager to open.'}
 ]},
 {ph:'DAY BEFORE FLIGHT',note:'26 September.',items:[
@@ -1467,7 +1467,7 @@ var SOS = {
  {l:'Police',p:'191',n:'General emergency.',pri:true},
  {l:'Ambulance',p:'1669',n:'National emergency medical service.',pri:true},
  {l:'Fire',p:'199',n:'',pri:true},
- {l:'My Hotel',p:'+6621259000',n:'Renaissance Ratchaprasong — the front desk will translate for you.',pri:false},
+ {l:'My Hotel',p:'+6621255000',n:'Renaissance Ratchaprasong — the front desk will translate for you.',pri:false},
  {l:'U.S. Embassy',p:'+6622054000',n:'95 Wireless Road — about 1.2 km from your hotel, walkable.',pri:false},
  {l:'Bumrungrad Hospital',p:'+6620668888',n:'24 hr international patient centre.',pri:false},
  {l:'Samitivej Sukhumvit',p:'+6620222222',n:'24 hr, strong international department.',pri:false}
@@ -1596,7 +1596,7 @@ var AUDITS = [
  '<b>Book Health Land</b> for Wednesday 21:00.',
  '<b>Confirm your actual Emirates flight times</b> and update the departure time in this app if they differ from 19:00 / 21:00.',
  'Buy sunscreen, repellent and a basic medical kit at home — cheaper and no hunting on arrival.',
- 'Pack the temple outfit deliberately and try it on. Long trousers you can tolerate at 33°C is a real constraint.',
+ 'Pack the temple outfit deliberately and try it on. Long trousers you can tolerate at 91°F is a real constraint.',
  'Download offline Google Maps for Bangkok.',
  'Screenshot: passport, insurance, flights, hotel booking, TDAC QR, and this app’s emergency page.',
  'Ask the hotel at check-in about luggage hold and late checkout for 1 October.']},
@@ -1641,6 +1641,26 @@ function bkkMin(d){ var p=bkkFields(d); return (+p.hour)*60 + (+p.minute); }
 function bkkHour(d){ return +bkkFields(d).hour; }
 function bkkDow(d){ return new Date(bkkISO(d)+'T12:00:00+07:00').getUTCDay(); }
 function stamp(iso,hhmm){ return Date.parse(iso+'T'+hhmm+':00+07:00'); }
+function F(c){ return Math.round(c*9/5+32); }        /* °C → °F */
+function inch(mm){ if(mm==null) return '—'; var i=mm/25.4; return (i<0.1?i.toFixed(2):i.toFixed(1))+'"'; }
+/* 24h "17:30" → "5:30 PM". Times are stored in 24h and converted only for display. */
+function t12(hhmm){
+  var m=/^(\d{1,2}):(\d{2})$/.exec(String(hhmm).trim()); if(!m) return hhmm;
+  var h=+m[1]; if(h>23) return hhmm;
+  return (h%12||12)+':'+m[2]+'\u00A0'+(h>=12?'PM':'AM');
+}
+function hourShort(h){ return (h%12||12)+(h>=12?'p':'a'); }
+/* Convert every 24h time in rendered HTML, skipping anything inside a tag so
+   attribute values (input values, hrefs, inline styles) are never touched. */
+function fixTimes(html){
+  return html.replace(/(<[^>]*>)|([^<]+)/g, function(all,tag,text){
+    if(tag) return tag;
+    return text.replace(/(\d{1,2}):([0-5]\d)(?![\u00A0 ]?(AM|PM))(?![\d:])/g, function(str,h,mn){
+      var H=+h; if(H>23) return str;
+      return (H%12||12)+':'+mn+'\u00A0'+(H>=12?'PM':'AM');
+    });
+  });
+}
 function hm(mins){ mins=((mins%1440)+1440)%1440; var h=Math.floor(mins/60),m=mins%60;
   return (h<10?'0':'')+h+':'+(m<10?'0':'')+m; }
 function toMin(hhmm){ var p=String(hhmm).split(':'); return (+p[0])*60+(+p[1]); }
@@ -1678,8 +1698,8 @@ var W = { state:'loading', src:null, at:0, cur:null, hours:[], days:[], sunrise:
 function climoFor(iso){
   var hrs=[], base = stamp(iso,'00:00');
   for(var h=0;h<24;h++){
-    hrs.push({ ts:base+h*3600000, hour:h, temp:CLIMO.tempByHour[h],
-      feels: CLIMO.tempByHour[h] + (CLIMO.humidity>75?4:2),
+    hrs.push({ ts:base+h*3600000, hour:h, temp:F(CLIMO.tempByHour[h]),
+      feels: F(CLIMO.tempByHour[h] + (CLIMO.humidity>75?4:2)),
       pop:CLIMO.rainByHour[h], mm: CLIMO.rainByHour[h]>50?2.5:(CLIMO.rainByHour[h]>35?0.8:0),
       code: CLIMO.rainByHour[h]>55?80:(CLIMO.rainByHour[h]>35?3:2),
       uv: (h>=9&&h<=16)? Math.round(CLIMO.uvMax*(1-Math.abs(12.5-h)/5)) : 0 });
@@ -1698,11 +1718,11 @@ function loadClimo(){
   var st = sunTimes(iso);
   W.sunrise = st.sunrise; W.sunset = st.sunset;
   var h = bkkHour();
-  W.cur = { temp:CLIMO.tempByHour[h], feels:CLIMO.tempByHour[h]+4, hum:CLIMO.humidity,
+  W.cur = { temp:F(CLIMO.tempByHour[h]), feels:F(CLIMO.tempByHour[h]+4), hum:CLIMO.humidity,
             pop:CLIMO.rainByHour[h], mm:0, code:CLIMO.rainByHour[h]>55?80:2, wind:CLIMO.windAvg, uv:0 };
   W.days = TRIP.days.map(function(d){
     var s = sunTimes(d.d);
-    return { d:d.d, max: d.d<'2026-10-01'?32:33, min:25, pop: d.d<'2026-10-01'?62:55,
+    return { d:d.d, max: F(d.d<'2026-10-01'?32:33), min:F(25), pop: d.d<'2026-10-01'?62:55,
              mm: 7, uv:CLIMO.uvMax, sunrise:s.sunrise, sunset:s.sunset,
              code: 80, wind:CLIMO.windAvg };
   });
@@ -1714,7 +1734,7 @@ function fetchWx(){
     '&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m'+
     '&hourly=temperature_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,uv_index'+
     '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,uv_index_max,sunrise,sunset,wind_speed_10m_max'+
-    '&timezone=Asia%2FBangkok&forecast_days=10';
+    '&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=Asia%2FBangkok&forecast_days=10';
   var ctl = (typeof AbortController!=='undefined') ? new AbortController() : null;
   var killer = setTimeout(function(){ try{ ctl && ctl.abort(); }catch(e){} }, 8000);
   return fetch(url, ctl?{signal:ctl.signal}:{})
@@ -1790,11 +1810,11 @@ function currentMode(){
   var feels = (W.cur && W.cur.feels) || nh.feels;
 
   if(sumMm >= 6 || (maxPop>=85 && sumMm>=3))
-    return {m:MODES.HEAVY, msg:'Heavy rain in the next few hours ('+Math.round(sumMm)+' mm). Stay covered.'};
+    return {m:MODES.HEAVY, msg:'Heavy rain in the next few hours ('+inch(sumMm)+'). Stay covered.'};
   if(maxPop >= 55 || sumMm >= 1)
     return {m:MODES.RAIN, msg:'Rain likely — '+maxPop+'% within 4 hours. Have the covered backup ready.'};
-  if(feels >= 38)
-    return {m:MODES.HEAT, msg:'Feels like '+feels+'°C. Short hops, air conditioning, drink constantly.'};
+  if(feels >= 100)
+    return {m:MODES.HEAT, msg:'Feels like '+feels+'°F. Short hops, air conditioning, drink constantly.'};
   var h = bkkHour();
   if(maxPop < 25 && h>=14 && h<=19)
     return {m:MODES.DRY, msg:'Dry window — only '+maxPop+'% rain risk. Take the outdoor plan now.'};
@@ -2047,8 +2067,8 @@ function prepCount(){
   return (tot-dn)+' of '+tot;
 }
 function wxSourceNote(){
-  if(W.state==='live') return 'Live weather from Open-Meteo, updated '+clockStr(new Date(W.at))+'.';
-  if(W.state==='cache') return 'Cached weather from '+clockStr(new Date(W.at))+' — no connection right now.';
+  if(W.state==='live') return 'Live weather from Open-Meteo, updated '+t12(clockStr(new Date(W.at)))+'.';
+  if(W.state==='cache') return 'Cached weather from '+t12(clockStr(new Date(W.at)))+' — no connection right now.';
   return 'Live weather is unavailable here, so these figures are <b>embedded September climatology, not a forecast</b>. '+
     'Use the manual conditions buttons on Weather to drive the app’s decisions.';
 }
@@ -2097,7 +2117,7 @@ function renderDay(iso){
   if(dw){
     out += '<div class="bento" style="margin-top:12px;grid-template-columns:repeat(auto-fit,minmax(88px,1fr))">'+
       miniStat('amber','thermostat',dw.max+'°','high · low '+dw.min+'°')+
-      miniStat('blue','rainy',dw.pop+'%',(dw.mm!=null?dw.mm+' mm':'rain risk'))+
+      miniStat('blue','rainy',dw.pop+'%',(dw.mm!=null?inch(dw.mm)+' rain':'rain risk'))+
       miniStat('coral','wb_twilight',dw.sunset,'sunrise '+dw.sunrise)+
       miniStat('violet','light_mode',String(dw.uv),'UV peak')+'</div>';
   }
@@ -2467,7 +2487,10 @@ function vMove(){
     '<a class="btn sm" href="'+TRIP.hotel.maps+'" target="_blank" rel="noopener">'+mi('map','sm')+'Maps</a></div></div>'+
     '<p class="src" style="margin-top:8px">Hand the phone to the driver — Thai drivers frequently cannot read romanised addresses.</p></section>';
 
-  out += '<section class="sec"><div class="sechead"><h2>Thai address cards</h2><span class="n">'+ADDRESSES.length+' saved</span></div><div class="stack-s">';
+  out += '<section class="sec"><div class="sechead"><h2>Thai address cards</h2><span class="n">'+ADDRESSES.length+' saved</span></div>'+
+    callout('warnbox','edit_note','<b>The Thai text here is reconstructed, not copied from an official source.</b> It should work, but for '+
+    'anywhere that matters, use the Maps button — that is authoritative — or have the hotel concierge confirm the wording.')+
+    '<div class="stack-s" style="margin-top:12px">';
   ADDRESSES.forEach(function(a){
     out += '<details'+(a.key?' open':'')+'><summary><span class="media sm g-'+(a.key?'coral':'blue')+'">'+
       mi(a.key?'push_pin':'place','sm fill')+'</span><span class="sumtxt">'+a.name+'</span></summary><div class="dbody">'+
@@ -2523,11 +2546,18 @@ function airportModes(){
     'terminal — ignore any site claiming "Terminal 3" or "Terminal 4". Follow your boarding pass.</p>'+
     '<div class="row" style="margin-top:13px;align-items:center"><label class="eyebrow" for="ft">Actual flight time</label>'+
     '<input id="ft" class="searchbox" style="width:112px;min-height:44px;margin-left:auto;text-align:center;font-family:var(--mono)" '+
-    'value="'+dp.flight+'" onchange="setFlight(this.value)"></div>'+
-    '<p class="src" style="margin-top:7px">Change this if your Emirates departure is not '+TRIP.depart.time+'. Everything above recalculates.</p></div></section>';
+    'value="'+t12(dp.flight)+'" onchange="setFlight(this.value)"></div>'+
+    '<p class="src" style="margin-top:7px">Change this if your Emirates departure is not '+t12(TRIP.depart.time)+'. Everything above recalculates.</p></div></section>';
   return out;
 }
-function setFlight(v){ if(/^\d{1,2}:\d{2}$/.test(v)){ LS.set('flighttime',v.length===4?'0'+v:v); render(); } else toast('Use HH:MM'); }
+function setFlight(v){
+  var m=/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i.exec(String(v).replace(/\u00A0/g,' ').trim());
+  if(!m){ toast('Use a time like 9:00 PM'); return; }
+  var h=+m[1], mn=+m[2], ap=m[3]&&m[3].toUpperCase();
+  if(ap){ if(h<1||h>12){ toast('Use a time like 9:00 PM'); return; } h=h%12; if(ap==='PM') h+=12; }
+  if(h>23||mn>59){ toast('Use a time like 9:00 PM'); return; }
+  LS.set('flighttime',(h<10?'0':'')+h+':'+(mn<10?'0':'')+mn); render();
+}
 
 /* ---------- WEATHER ---------- */
 function vWx(){
@@ -2537,7 +2567,7 @@ function vWx(){
   if(W.state!=='live'){
     out += callout('warnbox','cloud_off','<b>This is not a live forecast.</b> '+
       (W.state==='cache'
-        ? 'The network is unavailable, so these are cached readings from '+clockStr(new Date(W.at))+'.'
+        ? 'The network is unavailable, so these are cached readings from '+t12(clockStr(new Date(W.at)))+'.'
         : 'This page cannot reach a weather service from where it is hosted, so the numbers below are '+
           '<b>embedded Bangkok September climatology</b> — a typical pattern, not today’s weather.')+
       ' Tell the app what it is actually doing outside; that drives every recommendation.')+'<div style="height:13px"></div>';
@@ -2556,8 +2586,8 @@ function vWx(){
     miniStat('amber','thermostat',(cur.temp!=null?cur.temp+'°':'—'),(nh?wmo(nh.code)[0]:'—'))+
     miniStat('coral','device_thermostat',(cur.feels!=null?cur.feels+'°':'—'),'feels like')+
     miniStat('blue','humidity_percentage',(cur.hum!=null?cur.hum+'%':'—'),'humidity')+
-    miniStat('blue','rainy',(nh&&nh.pop!=null?nh.pop+'%':'—'),(nh&&nh.mm?nh.mm+' mm':'this hour'))+
-    miniStat('teal','air',(cur.wind!=null?cur.wind:'—'),'km/h wind')+
+    miniStat('blue','rainy',(nh&&nh.pop!=null?nh.pop+'%':'—'),(nh&&nh.mm?inch(nh.mm):'this hour'))+
+    miniStat('teal','air',(cur.wind!=null?cur.wind:'—'),'mph wind')+
     miniStat('violet','light_mode',(nh&&nh.uv!=null?String(nh.uv):'—'),(nh&&nh.uv>=8?'burn in 15 min':'UV index'))+
     miniStat('amber','wb_sunny',W.sunrise||'—','sunrise')+
     miniStat('coral','wb_twilight',W.sunset||'—','sunset')+
@@ -2567,16 +2597,16 @@ function vWx(){
   if(hrs.length){
     out += '<section class="sec"><div class="sechead"><h2>Next 14 hours</h2><span class="n">Hourly</span></div>'+
       '<div class="hours">'+hrs.map(function(h){
-        return '<div class="hr'+(h.pop>=55?' wet':'')+'"><span class="h">'+hm(h.hour*60)+'</span>'+
+        return '<div class="hr'+(h.pop>=55?' wet':'')+'"><span class="h">'+hourShort(h.hour)+'</span>'+
           mi(wxIcon(h.code,h.pop),'fill')+'<span class="d">'+h.temp+'°</span>'+
           '<span class="r">'+(h.pop!=null?h.pop+'%':'')+'</span></div>'; }).join('')+'</div></section>';
   }
 
   out += '<section class="sec"><div class="sechead"><h2>Your five days</h2><span class="n">Daily</span></div><div class="tw"><table>'+
-    '<thead><tr><th>Day</th><th>High</th><th>Rain</th><th>mm</th><th>UV</th><th>Sunset</th></tr></thead><tbody>';
+    '<thead><tr><th>Day</th><th>High</th><th>Rain</th><th>Total</th><th>UV</th><th>Sunset</th></tr></thead><tbody>';
   TRIP.days.forEach(function(d){ var w=dayWx(d.d)||{};
     out += '<tr><td><b>'+d.dow.slice(0,3)+' '+(+d.d.slice(8))+'</b></td><td class="num">'+(w.max!=null?w.max+'°':'—')+'</td>'+
-      '<td class="num">'+(w.pop!=null?w.pop+'%':'—')+'</td><td class="num">'+(w.mm!=null?w.mm:'—')+'</td>'+
+      '<td class="num">'+(w.pop!=null?w.pop+'%':'—')+'</td><td class="num">'+(w.mm!=null?inch(w.mm):'—')+'</td>'+
       '<td class="num">'+(w.uv!=null?w.uv:'—')+'</td><td class="num">'+(w.sunset||'—')+'</td></tr>'; });
   out += '</tbody></table></div></section>';
 
@@ -2597,8 +2627,8 @@ function vWx(){
 
   out += modeAdvice(md);
   out += sec('','What September actually does',
-    '<div class="card"><p class="tiny">September is Bangkok’s wettest and most humid month: roughly <b>245 mm across 24 rain days</b>, '+
-    'humidity 79–87%, highs around 32°C. October eases slightly on rain days but not volume. Crucially, Thai rain is convective and lands '+
+    '<div class="card"><p class="tiny">September is Bangkok’s wettest and most humid month: roughly <b>9.6 inches of rain across 24 days</b>, '+
+    'humidity 79–87%, highs around 90°F. October eases slightly on rain days but not volume. Crucially, Thai rain is convective and lands '+
     '<b>mid-afternoon into early evening</b> — exactly your 16:00 window.</p>'+
     '<p class="tiny" style="margin-top:9px"><b>Plan on roughly two of your four evenings being rain-affected.</b> '+
     'That is why every evening has a covered twin rather than a footnote.</p>'+
@@ -2674,7 +2704,30 @@ function vSafe(){
         '<ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.7;color:var(--ink2)">'+
         a.items.map(function(i){ return '<li style="margin-bottom:8px">'+i+'</li>'; }).join('')+'</ul></div></details>'; }).join('')+'</div></section>';
 
-  out += '<section class="sec"><div class="sechead"><h2>Research register</h2><span class="n">'+SOURCES.length+' sources</span></div>'+
+  out += '<section class="sec"><div class="sechead"><h2>How reliable is this?</h2><span class="n">Read this once</span></div>'+
+    '<p class="tiny" style="margin-bottom:12px">This app mixes researched fact with derived estimate. Knowing which is which is the difference '+
+    'between using it well and being caught out.</p><div class="stack-s">'+
+    [['verified','good','Researched from live sources on 21 Sep 2026',
+      'Temple hours, entry prices and dress codes. The TDAC requirement and the 15 Sep visa change. The Vertigo closure. ATM fees and the '+
+      'exchange rate. Restaurant and rooftop names, districts and policies. Emergency numbers and the U.S. Embassy address. Bangkok climate '+
+      'statistics. Festival dates. BTS and Grab fares and the airport pickup point.'],
+     ['calculate','amber','Derived — computed, not looked up',
+      'All travel times and Grab fare ranges are estimates from typical traffic, not quoted fares. USD restaurant figures are bands, not menu '+
+      'prices. Sunset times are interpolated from a 22 Sep anchor rather than read per-day. Departure timings are computed from your stated '+
+      'flight time. The whole itinerary is my construction — no part of it is a booked or published schedule.'],
+     ['edit_note','crit','Written from knowledge — VERIFY THESE',
+      'The <b>Thai-language address cards are my reconstructions</b>, not copied from official sources. They are plausible and should work, but '+
+      'have your hotel concierge check any you plan to rely on, and prefer the Maps link, which is authoritative. Restaurant and spa phone '+
+      'numbers are likewise unverified. <b>The hotel number was wrong in the first version of this app</b> and is now corrected to '+
+      '+66 2 125 5000 — that error is exactly why this section exists.'],
+     ['cloud_off','blue','Not real data at all until it loads',
+      'Weather figures are embedded September climatology — a typical pattern, not a forecast — unless the Weather screen says "Live". '+
+      'Your flight times are the approximations you gave me; no flight numbers were confirmed.']
+    ].map(function(r){
+      return '<div class="card pad-s"><div class="row" style="gap:7px;margin-bottom:6px">'+
+        '<span class="chip '+r[1]+'">'+mi(r[0],'xs')+r[2]+'</span></div>'+
+        '<p class="tiny">'+r[3]+'</p></div>'; }).join('')+'</div></section>'+
+    '<section class="sec"><div class="sechead"><h2>Research register</h2><span class="n">'+SOURCES.length+' sources</span></div>'+
     '<p class="tiny" style="margin-bottom:12px">Every time-sensitive claim, with its source, date and confidence. Two official sites — the TDAC '+
     'portal and watpho.com — could not be reached from the environment this was built in; anything depending on them is marked accordingly.</p>'+
     '<div class="stack-s">'+SOURCES.map(function(s){
@@ -2840,7 +2893,7 @@ function openSOS(){
   h += callout('note','wifi_off','<b>This screen works with no signal and no data.</b> Everything on it is stored in the page. '+
     'Screenshot it before you fly, and consider printing it — the one failure mode it cannot survive is not having your phone.');
 
-  var v=$('#sosview'); v.innerHTML=h; v.hidden=false; document.body.style.overflow='hidden';
+  var v=$('#sosview'); v.innerHTML=fixTimes(h); v.hidden=false; document.body.style.overflow='hidden';
 }
 function closeSOS(){ var v=$('#sosview'); v.hidden=true; v.innerHTML=''; document.body.style.overflow=''; }
 
@@ -2865,7 +2918,7 @@ function renderTabs(){
 var MODEICON={NORMAL:'partly_cloudy_day',DRY:'wb_sunny',RAIN:'rainy',HEAVY:'thunderstorm',HEAT:'local_fire_department'};
 function renderChrome(){
   var md=currentMode(), t=tripInfo(), cur=W.cur||{}, nh=nowHour();
-  $('#clk').textContent = clockStr();
+  $('#clk').textContent = t12(clockStr());
   $('#wxmini').textContent = (cur.temp!=null? ' · '+cur.temp+'°' : '');
   var strip=$('#modestrip');
   strip.className='modestrip m-'+md.m.cls.slice(2);
@@ -2887,7 +2940,7 @@ function render(){
   else if(CUR==='wx') h=vWx();
   else if(CUR==='safe') h=vSafe();
   else if(CUR==='prep') h=vPrep();
-  v.innerHTML=h;
+  v.innerHTML=fixTimes(h);
   if(CUR==='food'){ renderFoodList(); renderDishList(''); }
   if(CUR==='prep'){ renderPhrases(''); }
 }
@@ -2933,8 +2986,8 @@ function boot(){
   var lastISO = bkkISO(), lastMin = bkkMin();
   setInterval(function(){
     var iso=bkkISO(), m=bkkMin();
-    var c=$('#bigclock'); if(c) c.textContent=clockStr();
-    $('#clk').textContent=clockStr();
+    var c=$('#bigclock'); if(c) c.textContent=t12(clockStr());
+    $('#clk').textContent=t12(clockStr());
     if(iso!==lastISO){ lastISO=iso; lastMin=m; VIEWDAY=null; render(); return; }
     /* Only Home re-renders on a tick — Today holds journal textareas. */
     if(m!==lastMin){ lastMin=m; renderChrome(); if(CUR==='home') render(); }
