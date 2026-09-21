@@ -105,11 +105,6 @@ header#top{position:sticky;top:env(safe-area-inset-top,0px);z-index:60;
 .iconbtn{background:var(--surf);border:1px solid var(--line);border-radius:12px;width:40px;height:40px;
   display:grid;place-items:center;cursor:pointer;flex-shrink:0;box-shadow:var(--sh1);color:var(--ink2)}
 .iconbtn:active{transform:scale(.95)}
-.sosbtn{background:var(--crit);color:#fff;border:0;border-radius:12px;height:40px;padding:0 13px;
-  display:flex;align-items:center;gap:5px;font-family:var(--disp);font-weight:700;font-size:13px;
-  cursor:pointer;flex-shrink:0;box-shadow:0 3px 10px rgba(229,72,77,.3)}
-.sosbtn:active{transform:scale(.96)}
-
 /* mode strip */
 .modestrip{display:flex;align-items:center;gap:8px;padding:8px 16px;max-width:780px;margin:0 auto;
   font-size:12.5px;border-top:1px solid var(--line)}
@@ -150,12 +145,10 @@ nav#tabs{position:fixed;left:0;right:0;bottom:0;z-index:70;overflow:visible;
 .tab.fab:active .fabin{transform:scale(.92)}
 .tab.fab[aria-selected="true"] .fabin{box-shadow:0 10px 24px rgba(255,107,74,.58),0 0 0 4px var(--coral-s)}
 
-/* ---------- top nav (large screens): hamburger replaces the bottom bar ---------- */
-.hamburgerbtn{display:none}
+/* ---------- top nav: hamburger holds SOS, theme and every page ---------- */
 @media (min-width:900px){
   nav#tabs{display:none}
   main{padding-bottom:26px}
-  .hamburgerbtn{display:grid}
 }
 
 /* ---------- type ---------- */
@@ -466,10 +459,6 @@ details[open] summary{border-bottom:1px solid var(--line)}
   .wxpill{padding:5px 9px;font-size:12px}
   .topbar{gap:7px;padding:10px 14px}
 }
-@media (max-width:370px){
-  .sosbtn{padding:0 10px;font-size:0;gap:0}
-  .sosbtn .mi{font-size:20px}
-}
 @media (min-width:640px){
   h1{font-size:32px} .hero h1{font-size:31px}
   main{padding:24px 22px 112px}
@@ -481,7 +470,6 @@ details[open] summary{border-bottom:1px solid var(--line)}
 <div id="app">
   <header id="top">
     <div class="topbar">
-      <button class="iconbtn hamburgerbtn" id="menubtn" aria-label="Open navigation menu"><span class="mi">menu</span></button>
       <div class="logo">
         <span class="logomark"><svg class="logomark-svg" viewBox="2 6 20 14" width="25" height="25" fill="none" aria-hidden="true">
 <circle cx="10.5" cy="13" r="6.1" stroke="#fff" stroke-width="1.35"/>
@@ -496,8 +484,7 @@ details[open] summary{border-bottom:1px solid var(--line)}
       </div>
       <div class="topright">
         <span class="wxpill"><span class="mi">schedule</span><span id="clk">--:--</span><span id="wxmini"></span></span>
-        <button class="iconbtn" id="themebtn" aria-label="Switch light or dark theme"><span class="mi">contrast</span></button>
-        <button class="sosbtn" id="sosbtn" aria-label="Open emergency screen"><span class="mi sm fill">emergency</span>SOS</button>
+        <button class="iconbtn" id="menubtn" aria-label="Open menu: pages, emergency and theme"><span class="mi">menu</span></button>
       </div>
     </div>
     <div class="modestrip m-NORMAL" id="modestrip">
@@ -2387,7 +2374,7 @@ function jset(k,v){ var iso=bkkISO(), j=LS.get('journal',{}); j[iso]=j[iso]||{};
 /* ---------- EXPLORE / DECISION ENGINE ---------- */
 var DEC = { where:'hotel', time:120, wx:null, mood:null };
 /* ---------- generic hub sub-tabs, used by Around and Ready ---------- */
-var SUBSEL = { around:'food', ready:'safety' };
+var SUBSEL = { around:'food', ready:'prep' };
 function subtabBar(hub, tabs){
   return '<div class="subtabs" role="tablist">'+tabs.map(function(t){
     return '<button class="subtab" role="tab" aria-selected="'+(SUBSEL[hub]===t[0])+'" onclick="setSub2(\''+hub+'\',\''+t[0]+'\')">'+
@@ -2399,8 +2386,8 @@ function vAround(){
   return out + (SUBSEL.around==='move' ? vMove() : vFood());
 }
 function vReady(){
-  var out = subtabBar('ready',[['safety','Safety','shield'],['prep','Prep','checklist']]);
-  return out + (SUBSEL.ready==='prep' ? vPrep() : vSafe());
+  var out = subtabBar('ready',[['prep','Prep','checklist'],['safety','Safety','shield']]);
+  return out + (SUBSEL.ready==='safety' ? vSafe() : vPrep());
 }
 function vExplore(){
   return vDiscover();
@@ -3045,7 +3032,7 @@ var MENU=[
   {k:'itinerary',l:'Itinerary',s:'All five days, hour by hour',i:'event_note',c:'violet'},
   {k:'explore',l:'Explore',s:'What should I do right now?',i:'explore',c:'coral'},
   {k:'around',l:'Around',s:'Food, transport, Thai address cards',i:'travel_explore',c:'amber'},
-  {k:'ready',l:'Ready',s:'Safety, health, packing, checklist',i:'task_alt',c:'pink'}
+  {k:'ready',l:'Ready',s:'Checklist, packing, money, Thai, safety',i:'task_alt',c:'pink'}
  ]}
 ];
 function openMenu(){
@@ -3226,15 +3213,13 @@ function boot(){
   if(CURR!=='USD') CURR='THB';
   SUBSEL.around = LS.get('sub_around','food');
   if(['food','move'].indexOf(SUBSEL.around)===-1) SUBSEL.around='food';
-  SUBSEL.ready = LS.get('sub_ready','safety');
-  if(['safety','prep'].indexOf(SUBSEL.ready)===-1) SUBSEL.ready='safety';
+  SUBSEL.ready = LS.get('sub_ready','prep');
+  if(['safety','prep'].indexOf(SUBSEL.ready)===-1) SUBSEL.ready='prep';
   CUR = LS.get('tab','home');
   if(['home','itinerary','explore','around','ready'].indexOf(CUR)===-1) CUR='home';
   render();
 
-  $('#sosbtn').addEventListener('click', function(){ closeMenu(); openSOS(); });
-  $('#themebtn').addEventListener('click', toggleTheme);
-  var mb=$('#menubtn'); if(mb) mb.addEventListener('click', openMenu);
+  $('#menubtn').addEventListener('click', openMenu);
   document.addEventListener('keydown', function(e){
     if(e.key!=='Escape') return;
     if(!$('#sosview').hidden) closeSOS();
