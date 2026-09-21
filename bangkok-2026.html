@@ -208,6 +208,37 @@ p{margin:0}
 :root[data-theme="dark"] .btile .bi,:root:not([data-theme="light"]) .btile .bi{background:rgba(255,255,255,.08)}
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .btile .bi{background:rgba(255,255,255,.62)}}
 
+/* sub-tabs inside a hub screen */
+.subtabs{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding:2px 0 14px}
+.subtabs::-webkit-scrollbar{display:none}
+.subtab{flex:0 0 auto;display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surf);
+  border-radius:999px;padding:9px 15px;min-height:44px;cursor:pointer;color:var(--ink2);
+  font-family:var(--body);font-weight:600;font-size:13.5px;box-shadow:var(--sh1)}
+.subtab .mi{font-size:18px}
+.subtab[aria-selected="true"]{background:var(--navy);color:var(--bg);border-color:var(--navy)}
+
+/* slide-out menu */
+#menuview{position:fixed;inset:0;z-index:190;background:var(--bg);overflow-y:auto;
+  padding:16px 16px calc(30px + env(safe-area-inset-bottom,0px));
+  padding-top:calc(16px + env(safe-area-inset-top,0px));
+  animation:slideIn .22s cubic-bezier(.22,.7,.3,1)}
+@keyframes slideIn{from{transform:translateX(12%);opacity:.4}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){#menuview{animation:none}}
+.menugroup{margin-bottom:22px}
+.menugroup>.eyebrow{display:block;margin-bottom:9px}
+.menulist{display:flex;flex-direction:column;background:var(--surf);border-radius:var(--r-l);
+  overflow:hidden;box-shadow:var(--sh1)}
+.menuitem{display:flex;align-items:center;gap:13px;padding:14px 15px;border:0;background:none;width:100%;
+  text-align:left;cursor:pointer;font-family:var(--body);color:var(--ink);min-height:60px;
+  border-bottom:1px solid var(--line);text-decoration:none}
+.menuitem:last-child{border-bottom:0}
+.menuitem:active{background:var(--surf2)}
+.menuitem .mt{flex:1;min-width:0}
+.menuitem .ml{font-family:var(--disp);font-weight:700;font-size:15px;letter-spacing:-.01em;display:block}
+.menuitem .ms{font-size:12px;color:var(--ink2);display:block;margin-top:1px}
+.menuitem .mi.chev{color:var(--ink3);font-size:20px}
+.menuitem.danger .ml{color:var(--crit)}
+
 /* day pills */
 .daytabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 0 6px;margin-bottom:4px}
 .daytabs::-webkit-scrollbar{display:none}
@@ -445,6 +476,7 @@ details[open] summary{border-bottom:1px solid var(--line)}
   <nav id="tabs"><div class="tabscroll" id="tabscroll" role="tablist"></div></nav>
 </div>
 <div id="sosview" hidden></div>
+<div id="menuview" hidden></div>
 
 <script>
 "use strict";
@@ -2006,13 +2038,15 @@ function vHome(){
 
   /* bento */
   out += '<section class="sec" style="margin-top:22px"><div class="bento">'+
-    btile('violet','map','Itinerary','5 days planned','plan')+
+    btile('violet','event_note','Itinerary','5 days planned','itinerary')+
     btile('amber','restaurant','Food',RESTAURANTS.length+' restaurants','food')+
     btile('teal','directions_subway','Transport','Grab, BTS, boats','move')+
     btile('blue','rainy','Weather',md.m.lbl,'wx')+
     btile('pink','shield','Safety','Scams, health, etiquette','safe')+
     btile('coral','checklist','Prep',prepCount()+' to do','prep')+
     '</div></section>';
+
+  out += homeTodos();
 
   /* next up */
   var nx = nextBlock();
@@ -2055,6 +2089,25 @@ function vHome(){
   out += '<p class="src">'+wxSourceNote()+'</p>';
   return out;
 }
+/* The few things that actually still need doing, surfaced on the dashboard. */
+function homeTodos(){
+  var done=LS.get('checks',{}), open=[], total=0, doneN=0;
+  PREP.forEach(function(ph){ ph.items.forEach(function(i){
+    total++; if(done[i.id]) doneN++; else if(open.length<4) open.push({ph:ph,i:i}); }); });
+  if(!open.length) return sec('','To do',
+    callout('goodbox','task_alt','<b>Everything on the checklist is done.</b> Nothing outstanding before you fly.'));
+  var pct = total?Math.round(doneN/total*100):0;
+  return '<section class="sec"><div class="sechead"><h2>To do</h2><span class="n">'+(total-doneN)+' left</span></div>'+
+    '<div style="height:8px;border-radius:999px;background:var(--surf3);overflow:hidden;margin-bottom:12px">'+
+    '<div style="height:100%;width:'+pct+'%;border-radius:999px;background:linear-gradient(90deg,var(--coral),#FF9A6B)"></div></div>'+
+    '<div class="stack-s">'+open.map(function(o){
+      return '<label class="chk"><input type="checkbox" id="h_'+o.i.id+'" onchange="chkHome(\''+o.i.id+'\',this.checked)">'+
+        '<span class="ct"><span class="n">'+o.i.n+'</span>'+
+        '<span class="chip '+(o.ph.urgent?'crit':'')+'" style="margin-top:5px">'+o.ph.ph+'</span></span></label>'; }).join('')+
+    '</div><div style="margin-top:11px"><button class="btn full" onclick="go(\'prep\')">'+
+    mi('checklist')+'Full checklist</button></div></section>';
+}
+function chkHome(id,v){ var c=LS.get('checks',{}); c[id]=v; LS.set('checks',c); render(); }
 function hstat(k,v,s){ return '<div class="hstat"><span class="k">'+k+'</span><span class="v">'+v+'</span><span class="s">'+s+'</span></div>'; }
 function btile(c,icon,title,subtitle,tab){
   return '<button class="btile t-'+c+'" onclick="go(\''+tab+'\')">'+
@@ -2091,19 +2144,39 @@ function dayPills(active){
 function setDay(d){ VIEWDAY=d; render(); window.scrollTo(0,0); }
 
 /* ---------- TODAY ---------- */
-function vToday(){
+function vItinerary(){
   var t=tripInfo();
   var iso = VIEWDAY || (t.day ? t.iso : TRIP.days[0].d);
-  var out = dayPills(iso);
-  if(t.before && !VIEWDAY){
-    out += callout('note','flight_takeoff','You land on <b>Sunday 27 September at '+TRIP.arrive.time+'</b>'+
-      (dur(t.toArrive)?' — '+dur(t.toArrive)+' from now':'')+'. Previewing arrival day below.')+'<div style="height:16px"></div>';
+  var themes={'2026-09-27':['flight_land','blue','Hotel'],'2026-09-28':['location_city','coral','Ratchaprasong'],
+              '2026-09-29':['temple_buddhist','violet','Old City'],'2026-09-30':['spa','teal','Sukhumvit'],
+              '2026-10-01':['temple_buddhist','amber','Old City']};
+
+  var out = '<details style="margin-bottom:16px"><summary><span class="media sm g-violet">'+mi('insights','sm fill')+'</span>'+
+    '<span class="sumtxt">Why this trip is shaped like this</span></summary><div class="dbody">'+
+    '<p class="tiny">You have <b>four evenings and one day</b>, not four days. Every major temple in Bangkok closes between '+
+    '3:30 PM and 6:00 PM, and you are committed 7:00 AM–4:00 PM on three of them. That one fact determined everything here: '+
+    '<b>Thursday 1 October is the only day the Grand Palace, Wat Pho and Wat Arun exist for you</b>, and it is also your departure day. '+
+    'The evenings are built around what is genuinely open after dark, clustered so you never cross the city twice.</p>'+
+    '<div class="stack-s" style="margin-top:13px">'+TRIP.days.map(function(d){
+      var day=ITIN[d.d], th=themes[d.d]||['event','blue',''];
+      return '<button class="listrow" onclick="setDay(\''+d.d+'\')">'+
+        '<span class="media sm g-'+th[1]+'">'+mi(th[0],'fill')+'</span>'+
+        '<span class="lr"><span class="lt">'+d.dow+' '+(+d.d.slice(8))+' '+monName(d.d)+'</span>'+
+        '<span class="ls">'+(day?day.title:'')+'</span>'+
+        '<span class="row" style="margin-top:6px;gap:6px"><span class="chip">'+mi('schedule','xs')+d.free+'</span>'+
+        '<span class="chip blue">'+mi('place','xs')+th[2]+'</span></span></span>'+
+        mi('chevron_right','chev')+'</button>'; }).join('')+'</div></div></details>';
+
+  out += dayPills(iso);
+
+  if(t.before && iso===TRIP.days[0].d){
+    out += callout('note','flight_takeoff','You land on <b>Sunday 27 September at 7:00 PM</b>'+
+      (dur(t.toArrive)?' — '+dur(t.toArrive)+' from now':'')+'. This is your arrival evening.')+'<div style="height:16px"></div>';
   }
   out += renderDay(iso);
   if(!t.before && !t.after && iso===bkkISO()) out += vJournal();
   return out;
 }
-
 function renderDay(iso){
   var day=ITIN[iso];
   if(!day) return '<div class="empty">'+mi('event_busy')+'Nothing scheduled for this date.</div>';
@@ -2233,44 +2306,20 @@ function jset(k,v){ var iso=bkkISO(), j=LS.get('journal',{}); j[iso]=j[iso]||{};
   if(k==='rating') render(); }
 
 /* ---------- PLAN ---------- */
-function vPlan(){
-  var out = sec('','The shape of this trip',
-    '<div class="card"><p class="tiny">You have <b>four evenings and one day</b>, not four days. '+
-    'Every major temple in Bangkok closes between 15:30 and 18:00, and you are committed 07:00–16:00 on three of them. '+
-    'That one fact determined everything below: <b>Thursday 1 October is the only day the Grand Palace, Wat Pho and Wat Arun exist for you</b>, '+
-    'and it is also your departure day. The evenings are built around what is genuinely open after dark, clustered so you never cross the city twice.</p></div>');
-
-  out += '<section class="sec"><div class="sechead"><h2>Five days</h2><span class="n">Overview</span></div><div class="stack-s">';
-  var themes=[['flight_land','blue','Arrival — do nothing ambitious','Hotel'],
-              ['location_city','coral','Near-field: shrine, dinner, rooftop','Ratchaprasong'],
-              ['temple_buddhist','violet','Golden Mount sunset + river dinner','Old City'],
-              ['spa','teal','Rooftop, dinner, two-hour massage','Sukhumvit'],
-              ['temple_buddhist','amber','Grand Palace, Wat Pho, Wat Arun → airport','Old City']];
-  TRIP.days.forEach(function(d,i){
-    var th=themes[i];
-    out += '<button class="listrow" onclick="setDay(\''+d.d+'\');go(\'today\')">'+
-      '<span class="media sm g-'+th[1]+'">'+mi(th[0],'fill')+'</span>'+
-      '<span class="lr"><span class="lt">'+d.dow+' '+(+d.d.slice(8))+' '+monName(d.d)+'</span>'+
-      '<span class="ls">'+th[2]+'</span>'+
-      '<span class="row" style="margin-top:6px;gap:6px"><span class="chip">'+mi('schedule','xs')+d.free+'</span>'+
-      '<span class="chip blue">'+mi('place','xs')+th[3]+'</span></span></span>'+
-      mi('chevron_right','chev')+'</button>';
-  });
-  out += '</div></section>';
-
-  out += '<section class="sec"><div class="sechead"><h2>Day by day</h2><span class="n">Full detail</span></div><div class="stack-s">';
-  TRIP.days.forEach(function(d){
-    var day=ITIN[d.d]; if(!day) return;
-    out += '<details><summary><span class="media sm g-blue">'+mi('event','sm fill')+'</span>'+
-      '<span class="sumtxt">'+d.dow+' '+(+d.d.slice(8))+' '+monName(d.d)+' — '+day.title+'</span></summary>'+
-      '<div class="dbody">'+renderDay(d.d)+'</div></details>';
-  });
-  return out+'</div></section>';
-}
-
 /* ---------- EXPLORE / DECISION ENGINE ---------- */
 var DEC = { where:'hotel', time:120, wx:null, mood:null };
+var ESUB='discover';
 function vExplore(){
+  var tabs=[['discover','Discover','auto_awesome'],['food','Food','restaurant'],['move','Transport','directions_subway']];
+  var out='<div class="subtabs" role="tablist">'+tabs.map(function(t){
+    return '<button class="subtab" role="tab" aria-selected="'+(ESUB===t[0])+'" onclick="setSub(\''+t[0]+'\')">'+
+      mi(t[2],'sm')+t[1]+'</button>'; }).join('')+'</div>';
+  if(ESUB==='food') return out+vFood();
+  if(ESUB==='move') return out+vMove();
+  return out+vDiscover();
+}
+function setSub(k){ ESUB=k; LS.set('esub',k); render(); window.scrollTo(0,0); }
+function vDiscover(){
   var md=currentMode();
   var autoWx = md.m.k==='HEAVY'?'heavy':(md.m.k==='RAIN'?'rain':(md.m.k==='HEAT'?'hot':'good'));
   var wx = DEC.wx || autoWx;
@@ -2895,25 +2944,95 @@ function openSOS(){
 
   var v=$('#sosview'); v.innerHTML=fixTimes(h); v.hidden=false; document.body.style.overflow='hidden';
 }
+var MENU=[
+ {g:'Plan', items:[
+  {k:'itinerary',l:'Itinerary',s:'All five days, hour by hour',i:'event_note',c:'violet'},
+  {k:'prep',l:'Prep & checklist',s:'TDAC, bookings, packing, money, Thai',i:'checklist',c:'coral'}
+ ]},
+ {g:'On the ground', items:[
+  {k:'explore',l:'Explore',s:'What should I do right now?',i:'explore',c:'teal'},
+  {k:'food',l:'Food',s:'Restaurants and the dish translator',i:'restaurant',c:'amber'},
+  {k:'move',l:'Transport',s:'Grab, BTS, boats, Thai address cards',i:'directions_subway',c:'blue'},
+  {k:'wx',l:'Weather',s:'Conditions, sunset engine, rain modes',i:'rainy',c:'blue'}
+ ]},
+ {g:'Reference', items:[
+  {k:'safe',l:'Safety & health',s:'Scams, etiquette, triage, sources',i:'shield',c:'pink'}
+ ]}
+];
+function openMenu(){
+  var t=tripInfo(), dp=departPlan();
+  var h='<div class="row" style="margin-bottom:18px;flex-wrap:nowrap"><h1 style="flex:1">Menu</h1>'+
+    '<button class="btn sm" onclick="closeMenu()">'+mi('close','sm')+'Close</button></div>';
+
+  h += MENU.map(function(grp){
+    return '<div class="menugroup"><span class="eyebrow">'+grp.g+'</span><div class="menulist">'+
+      grp.items.map(function(m){
+        return '<button class="menuitem" onclick="go(\''+m.k+'\')">'+
+          '<span class="media sm g-'+m.c+'">'+mi(m.i,'sm fill')+'</span>'+
+          '<span class="mt"><span class="ml">'+m.l+'</span><span class="ms">'+m.s+'</span></span>'+
+          mi('chevron_right','chev')+'</button>'; }).join('')+
+      '</div></div>'; }).join('');
+
+  h += '<div class="menugroup"><span class="eyebrow">Urgent</span><div class="menulist">'+
+    '<button class="menuitem danger" onclick="closeMenu();openSOS()">'+
+    '<span class="media sm g-pink">'+mi('emergency','sm fill')+'</span>'+
+    '<span class="mt"><span class="ml">Emergency</span><span class="ms">Tourist Police 1155, embassy, hospitals, protocols</span></span>'+
+    mi('chevron_right','chev')+'</button></div></div>';
+
+  h += '<div class="menugroup"><span class="eyebrow">Settings</span><div class="menulist">'+
+    '<button class="menuitem" onclick="toggleTheme()">'+
+    '<span class="media sm g-violet">'+mi('contrast','sm fill')+'</span>'+
+    '<span class="mt"><span class="ml">Light / dark</span><span class="ms">Switch the theme</span></span>'+
+    mi('chevron_right','chev')+'</button>'+
+    '<div class="menuitem" style="cursor:default">'+
+    '<span class="media sm g-coral">'+mi('flight_takeoff','sm fill')+'</span>'+
+    '<span class="mt"><span class="ml">Flight time</span><span class="ms">1 Oct departure — everything recalculates</span></span>'+
+    '<input class="searchbox" style="width:112px;min-height:44px;text-align:center;font-family:var(--mono);flex:0 0 auto" '+
+    'value="'+t12(dp.flight)+'" onchange="setFlight(this.value);closeMenu()"></div>'+
+    '</div></div>';
+
+  h += '<div class="card"><p class="tiny"><b>Trip status.</b> '+
+    (t.before ? (dur(t.toArrive)||'')+' until you land in Bangkok.'
+     : (t.after ? 'Trip complete.' : 'Day '+(t.idx+1)+' of 5 · '+dur(t.toDepart)+' until departure.'))+
+    '</p><p class="src" style="margin-top:8px">Checklists and journal entries are stored in this browser only. '+
+    'Everything except live weather works with no signal.</p></div>';
+
+  var v=$('#menuview'); v.innerHTML=fixTimes(h); v.hidden=false; document.body.style.overflow='hidden';
+  MENUOPEN=true; renderTabs();
+}
+function closeMenu(){ var v=$('#menuview'); if(!v) return; v.hidden=true; v.innerHTML='';
+  document.body.style.overflow=''; MENUOPEN=false; renderTabs(); }
 function closeSOS(){ var v=$('#sosview'); v.hidden=true; v.innerHTML=''; document.body.style.overflow=''; }
 
 /* =====================================================================
    NAV + BOOT
    ===================================================================== */
+/* Four destinations. Everything else lives one tap deeper, inside Explore's
+   sub-tabs or the slide-out menu. */
 var TABS=[
- {k:'home',l:'Home',i:'home'},{k:'today',l:'Today',i:'today'},{k:'plan',l:'Itinerary',i:'map'},
- {k:'explore',l:'Explore',i:'explore'},{k:'food',l:'Food',i:'restaurant'},{k:'move',l:'Transport',i:'directions_subway'},
- {k:'wx',l:'Weather',i:'rainy'},{k:'safe',l:'Safety',i:'shield'},{k:'prep',l:'Prep',i:'checklist'}
+ {k:'home',l:'Home',i:'home'},
+ {k:'itinerary',l:'Itinerary',i:'event_note'},
+ {k:'explore',l:'Explore',i:'explore'},
+ {k:'menu',l:'Menu',i:'menu'}
 ];
-var CUR='home';
-function go(k){ CUR=k; LS.set('tab',k); render(); window.scrollTo(0,0); }
+/* Which tab lights up for a given view. Food and Transport are Explore
+   sub-pages; Weather, Safety and Prep are reached through the menu. */
+var TABFOR={home:'home',itinerary:'itinerary',explore:'explore',wx:'menu',safe:'menu',prep:'menu'};
+var CUR='home', MENUOPEN=false;
+
+function go(k){
+  if(k==='menu'){ openMenu(); return; }
+  /* Legacy and in-page links keep working: fold them onto the new structure. */
+  if(k==='today'||k==='plan') k='itinerary';
+  if(k==='food'||k==='move'||k==='discover'){ ESUB=k; LS.set('esub',k); k='explore'; }
+  closeMenu();
+  CUR=k; LS.set('tab',k); render(); window.scrollTo(0,0);
+}
 function renderTabs(){
-  var strip=$('#tabscroll');
+  var strip=$('#tabscroll'), active=MENUOPEN?'menu':(TABFOR[CUR]||'home');
   strip.innerHTML = TABS.map(function(t){
-    return '<button class="tab" role="tab" aria-selected="'+(CUR===t.k)+'" onclick="go(\''+t.k+'\')">'+
+    return '<button class="tab" role="tab" aria-selected="'+(active===t.k)+'" onclick="go(\''+t.k+'\')">'+
       mi(t.i)+t.l+'</button>'; }).join('');
-  var sel=strip.querySelector('[aria-selected="true"]');
-  if(sel){ strip.scrollLeft = Math.max(0, sel.offsetLeft - (strip.clientWidth - sel.offsetWidth)/2); }
 }
 var MODEICON={NORMAL:'partly_cloudy_day',DRY:'wb_sunny',RAIN:'rainy',HEAVY:'thunderstorm',HEAT:'local_fire_department'};
 function renderChrome(){
@@ -2928,31 +3047,61 @@ function renderChrome(){
   $('#tripday').textContent = t.day ? ('Day '+(t.idx+1)+' of 5')
     : (t.before ? 'T-'+(dur(t.toArrive)||'—') : 'Complete');
 }
+function backBar(label){
+  return '<button class="btn sm" style="margin-bottom:16px" onclick="openMenu()">'+
+    mi('arrow_back','sm')+'Menu</button>';
+}
 function render(){
   renderChrome(); renderTabs();
   var v=$('#view'), h='';
+  try{
   if(CUR==='home') h=vHome();
-  else if(CUR==='today') h=vToday();
-  else if(CUR==='plan') h=vPlan();
+  else if(CUR==='itinerary') h=vItinerary();
   else if(CUR==='explore') h=vExplore();
-  else if(CUR==='food') h=vFood();
-  else if(CUR==='move') h=vMove();
-  else if(CUR==='wx') h=vWx();
-  else if(CUR==='safe') h=vSafe();
-  else if(CUR==='prep') h=vPrep();
+  else if(CUR==='wx') h=backBar()+vWx();
+  else if(CUR==='safe') h=backBar()+vSafe();
+  else if(CUR==='prep') h=backBar()+vPrep();
+  else { CUR='home'; h=vHome(); }
+  }catch(err){
+    h = '<div class="alert">'+mi('error')+'<div class="cbody"><b>This screen failed to load.</b>'+
+        '<p class="tiny" style="margin-top:6px">'+esc(err && err.message ? err.message : String(err))+'</p>'+
+        '<p class="tiny" style="margin-top:8px">Every other screen still works, and the Emergency button is unaffected.</p>'+
+        '</div></div>';
+  }
   v.innerHTML=fixTimes(h);
-  if(CUR==='food'){ renderFoodList(); renderDishList(''); }
+  /* Sub-lists render into placeholders after the view is in the DOM. */
+  if(CUR==='explore' && ESUB==='food'){ renderFoodList(); renderDishList(''); }
   if(CUR==='prep'){ renderPhrases(''); }
 }
-function initIcons(){
-  var FACE='24px "Material Symbols Rounded"';
-  var ok=function(){ document.documentElement.classList.add('mi-ok'); };
-  if(!(document.fonts && document.fonts.load)){ ok(); return; }   /* old browser: just show them */
-  var check=function(){ try{ if(document.fonts.check(FACE)){ ok(); return true; } }catch(e){} return false; };
+/* Material Symbols renders through ligatures: "home" becomes one glyph. If the
+   font is missing, the browser prints the word instead. document.fonts.check()
+   is NOT a usable test here — it reports true when the family falls back — so
+   measure instead: with the icon font active, "home" collapses to a single
+   glyph and is dramatically narrower than four monospace letters. */
+function iconsActive(){
   try{
-    document.fonts.load(FACE,'home').then(function(f){ if(f && f.length) ok(); else check(); })['catch'](check);
-    if(document.fonts.ready && document.fonts.ready.then) document.fonts.ready.then(check)['catch'](function(){});
-  }catch(e){ ok(); }
+    var measure=function(family){
+      var el=document.createElement('span');
+      el.textContent='home';
+      el.style.cssText='position:absolute;left:-9999px;top:-9999px;font-size:48px;'+
+                       'white-space:nowrap;visibility:hidden;font-family:'+family;
+      document.body.appendChild(el);
+      var w=el.offsetWidth; el.parentNode.removeChild(el); return w;
+    };
+    var withIcons=measure('"Material Symbols Rounded",monospace');
+    var plain=measure('monospace');
+    return withIcons>0 && plain>0 && Math.abs(withIcons-plain)>4;
+  }catch(e){ return false; }
+}
+function initIcons(){
+  var ok=function(){ document.documentElement.classList.add('mi-ok'); };
+  var attempt=function(){ if(iconsActive()){ ok(); return true; } return false; };
+  if(attempt()) return;
+  var tries=0, iv=setInterval(function(){ if(attempt()||++tries>20) clearInterval(iv); },250);
+  try{
+    if(document.fonts && document.fonts.ready && document.fonts.ready.then)
+      document.fonts.ready.then(attempt)['catch'](function(){});
+  }catch(e){}
 }
 function applyTheme(){
   var t=LS.get('theme',null);
@@ -2975,13 +3124,19 @@ function boot(){
     W.sunrise=cached.sunrise; W.sunset=cached.sunset;
     W.state='cache'; W.at=cached.at; W.src='cached';
   }
+  ESUB = LS.get('esub','discover');
+  if(['discover','food','move'].indexOf(ESUB)===-1) ESUB='discover';
   CUR = LS.get('tab','home');
-  if(!TABS.some(function(t){return t.k===CUR;})) CUR='home';
+  if(['home','itinerary','explore','wx','safe','prep'].indexOf(CUR)===-1) CUR='home';
   render();
 
-  $('#sosbtn').addEventListener('click', openSOS);
+  $('#sosbtn').addEventListener('click', function(){ closeMenu(); openSOS(); });
   $('#themebtn').addEventListener('click', toggleTheme);
-  document.addEventListener('keydown', function(e){ if(e.key==='Escape' && !$('#sosview').hidden) closeSOS(); });
+  document.addEventListener('keydown', function(e){
+    if(e.key!=='Escape') return;
+    if(!$('#sosview').hidden) closeSOS();
+    else if(!$('#menuview').hidden) closeMenu();
+  });
 
   var lastISO = bkkISO(), lastMin = bkkMin();
   setInterval(function(){
